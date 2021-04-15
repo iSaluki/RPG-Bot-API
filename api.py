@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/get')
 def test():
-    return 'Basic GET call'
+    return 'You are in a forest surrounded by wolves. I hope you picked up the flaming torch?'
 
 @app.route('/post', methods=["POST"])
 def testpost():
