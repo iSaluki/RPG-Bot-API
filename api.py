@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import json
 app = Flask(__name__)
 
 
@@ -9,11 +10,14 @@ def test():
 @app.route('/post', methods=["POST"])
 def testpost():
      input_json = request.get_json(force=True) 
-     dictToReturn = {'text':input_json['text']}
-     print("Recieved data:")
-     print(dictToReturn)
-     return jsonify(dictToReturn)
+     print(input_json)
+     dictToSend = {"Response":"OK"}
+     return jsonify(dictToSend)
+     #dictToReturn = {'text':input_json['text']}
+     #print("Recieved data:")
+     #print(dictToReturn)
+     #return jsonify(dictToReturn)
+
+
 
 app.run()
-
-#git
