@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/get')
 def test():
-    return 'Basic API call'
+    return 'Basic GET call'
 
 @app.route('/post', methods=["POST"])
 def testpost():
