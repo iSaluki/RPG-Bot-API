@@ -11,7 +11,7 @@ def test():
 def testpost():
      input_json = request.get_json(force=True) 
      print(input_json)
-     dictToSend = {"Response":"OK"}
+     dictToSend = {"Response":"OK","Command":input_json["command"]}
      return jsonify(dictToSend)
      #dictToReturn = {'text':input_json['text']}
      #print("Recieved data:")
