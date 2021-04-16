@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import json
 from pymongo import MongoClient
 import urllib
+import pprint
 
 app = Flask(__name__)
 
@@ -22,9 +23,8 @@ def testpost():
      input_json = request.get_json(force=True) 
      user_id = int(input_json["user"])
      collection = db["users"]
-     user = collection.find({"user_id":user_id})
-
-     print(user)
+     for user in collection.find({"user_id":user_id}):
+         print(user["user_id"], user["map"])
      dictToSend = {"response":"OK","command":input_json["command"],"args":input_json["args"]}
      return jsonify(dictToSend)
      #dictToReturn = {'text':input_json['text']}
