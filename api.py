@@ -60,7 +60,7 @@ def testpost():
     #return jsonify(dictToReturn)
 
 
-
+# PLAYER MOVEMENT BACKEND (PSEUDO)
 #def move(user_id,moveTo):
 #    input_json = request.get_json(force=True) 
 #    user_id = int(input_json["user"])
@@ -74,7 +74,8 @@ def testpost():
 #    if moveTo is in allowedMove:
 #            update db to moveTo
 #            respond to discord and say the user has moved  
-
+#    else:
+#            respond to discord and say that you can't travel here OR that this location doesn't exist
 
 
 app.run()
