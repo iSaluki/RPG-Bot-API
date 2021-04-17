@@ -14,6 +14,10 @@ client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmo
 db = client["rpg-db"]
 
 
+@app.route('/alive')
+def alive():
+    return "The API is functional"
+
 @app.route('/get')
 def get():
     user_id = int(request.args.get("user"))
