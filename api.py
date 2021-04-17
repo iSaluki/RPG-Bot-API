@@ -28,7 +28,6 @@ def GetLocation(user_id, _map, location):
 #        _map = user["map"]
 #        loc = user["location"]
 
-=======
 # Health check for DigitalOcean
 @app.route('/alive')
 def healthcheck():
@@ -53,9 +52,10 @@ def get():
 @app.route('/post', methods=["POST"])
 def testpost():
     user_request = request.get_json(force=True) 
+    print(user_request)
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
-    args = user_request["args"].lower()
+    args = user_request["args"]
 
     if command == "move":
         reply = Move(user_id, args)
@@ -73,7 +73,9 @@ def testpost():
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
     user = GetUser(user_id)
-    loc = GetLocation(user_id)
+    print(user)
+    loc = GetLocation(user_id, user["map"], user["location"])
+    print(loc)
 
     direction = args[0].lower()
     if direction in ["n", "north"]:
@@ -144,4 +146,5 @@ def Move(user_id, args):
 #            respond to discord and say that you can't travel here OR that this location doesn't exist
 
 
-app.run(host='0.0.0.0', port=8080)
+#app.run(host='0.0.0.0', port=8080)
+app.run(host='localhost', port=8080)
