@@ -9,6 +9,7 @@ app = Flask(__name__)
 client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmonJBwVK0")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
 
+
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 
@@ -27,8 +28,10 @@ def GetLocation(user_id, _map, location):
 #        _map = user["map"]
 #        loc = user["location"]
 
+=======
+# Health check for DigitalOcean
 @app.route('/alive')
-def alive():
+def healthcheck():
     return "The API is functional"
 
 @app.route('/get')
