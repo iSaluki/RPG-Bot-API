@@ -146,5 +146,7 @@ def Move(user_id, args):
 #            respond to discord and say that you can't travel here OR that this location doesn't exist
 
 
-app.run(host='0.0.0.0', port=8080)
+#Leave both lines commented out for production with Gunicorn
+
+#app.run(host='0.0.0.0', port=8080)
 #app.run(host='localhost', port=8080)
