@@ -15,12 +15,12 @@ db = client["rpg-db"]
 
 def GetUser(user_id):
     collection = db["users"]
-    for user in collection.find_one({"user_id":user_id}):
+    for user in collection.find({"user_id":user_id}):
         return user
 
 def GetLocation(user_id, _map, location):
     collection = db[_map]
-    for loc in collection.find_one({"location_id":location}):
+    for loc in collection.find({"location_id":location}):
         return(loc)
 
 
@@ -73,9 +73,9 @@ def testpost():
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
     user = GetUser(user_id)
-    print(user)
+    print("USER:",user)
     loc = GetLocation(user_id, user["map"], user["location"])
-    print(loc)
+    print("LOC:",loc)
 
     direction = args[0].lower()
     if direction in ["n", "north"]:
@@ -149,4 +149,4 @@ def Move(user_id, args):
 #Leave both lines commented out for production with Gunicorn
 
 #app.run(host='0.0.0.0', port=8080)
-#app.run(host='localhost', port=8080)
+app.run(host='localhost', port=8080)
