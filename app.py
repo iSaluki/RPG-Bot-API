@@ -9,7 +9,7 @@ logging.basicConfig(filename="api.log", level=logging.DEBUG)
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://api:"+urllib.parse.quote_plus("ASrBP1PUB6RUwlpk")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
-PRODUCTION = False
+PRODUCTION = True
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
