@@ -2,21 +2,21 @@ from flask import Flask, request, jsonify
 import json
 from pymongo import MongoClient
 import urllib
-import pprint
+from time import asctime
+import logging
 
+logging.basicConfig(filename="api.log", level=logging.DEBUG)
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmonJBwVK0")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
 PRODUCTION = True
-VERBOSE = True
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 def GetUser(user_id):
     collection = db["users"]
     for user in collection.find({"user_id":user_id}):
-        if VERBOSE:
-            print("GETUSER:", user)
+        logging.debug(f"{asctime()} GETUSER: {user}")
         return user
 
 
@@ -26,18 +26,15 @@ def UpdateUser(user_id, new_vals):
         {"user_id" : user_id},
         {"$set": new_vals},
         upsert=True)
-    if VERBOSE:
-        print("UPDATEUSER:", new_vals)
+    logging.debug(f"{asctime()} UPDATEUSER: new_vals = {new_vals}")
 
 
 def GetLocation(user_id, _map, location):
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
-        if VERBOSE:
-            print("GETLOCATION: ", loc)
+        logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
     for meta in collection.find({"location_id":"meta"}):
-        if VERBOSE:
-            print("GETLOCATION:", meta)
+        logging.debug(f"{asctime()} GETLOCATION: meta = {meta}")
     loc["type"] = meta["type"]
     loc["start_pos"] = meta["start_pos"]
     if meta["type"] == "grid":
@@ -47,11 +44,9 @@ def GetLocation(user_id, _map, location):
 
 def LocationDescription(user_id):
     user = GetUser(user_id)
-    if VERBOSE:
-        print("LOCATIONDESCRIPTION:",user)
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
     loc = GetLocation(user_id, user["map"], user["location"])
-    if VERBOSE:
-        print("LOCATIONDESCRIPTION:",loc)
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
     return loc["name"]+": "+loc["description"]
 
 
@@ -72,8 +67,7 @@ def get():
 @app.route('/post', methods=["POST"])
 def testpost():
     user_request = request.get_json(force=True) 
-    if VERBOSE:
-        print("GETPOST:", user_request)
+    logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
     args = user_request["args"]
@@ -86,8 +80,7 @@ def testpost():
         reply = "I don't know how to "+command+" "+args
 
     dict_to_send = {"response":"OK","command":user_request["command"],"args":user_request["args"], "reply":reply}
-    if VERBOSE:
-        print("GETPOST:", dict_to_send)
+    logging.debug(f"{asctime()} GETPOST: dict_to_send = {dict_to_send}")
     return jsonify(dict_to_send)
 
 # Process the move command.
@@ -96,11 +89,10 @@ def testpost():
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
     user = GetUser(user_id)
-    if VERBOSE:
-        print("MOVE:",user)
+    logging.debug(f"{asctime()} MOVE: user = {user}")
+
     loc = GetLocation(user_id, user["map"], user["location"])
-    if VERBOSE:
-        print("MOVE:",loc)
+    logging.debug(f"{asctime()} MOVE: loc = {loc}")
 
     direction = args[0].lower()
     if direction in ["n", "north"]:
@@ -141,8 +133,7 @@ def Move(user_id, args):
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
         
-        if VERBOSE:
-            print("MOVE: old location:", user["location"], "direction:", direction, "new location", new_loc)
+        logging.debug(f"{asctime()} MOVE: old location: {user["location"]} direction: {direction} new location {new_loc}")
 
         # Update the user to show their new location
         new_val = {"location": new_loc}
