@@ -50,9 +50,14 @@ def LocationDescription(user_id):
     return loc["name"]+": "+loc["description"]
 
 
+@app.route('/')
+def HideServer():
+    abort(403)
+
+
 # Health check for DigitalOcean
 @app.route('/alive')
-def healthcheck():
+def HealthCheck():
     return "The API is functional"
 
 
