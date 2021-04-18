@@ -40,8 +40,8 @@ def GetLocation(user_id, _map, location):
             print("GETLOCATION:", meta)
     loc["type"] = meta["type"]
     loc["start_pos"] = meta["start_pos"]
-    if loc["type"] == "grid":
-        loc["width"] == meta["width"]
+    if meta["type"] == "grid":
+        loc["width"] = meta["width"]
     return(loc)
 
 
