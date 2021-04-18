@@ -4,22 +4,18 @@ from pymongo import MongoClient
 import urllib
 import pprint
 
-
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmonJBwVK0")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
-
-
-
 PRODUCTION = True
-verbose = True
+VERBOSE = True
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 def GetUser(user_id):
     collection = db["users"]
     for user in collection.find({"user_id":user_id}):
-        if verbose:
+        if VERBOSE:
             print("GETUSER:", user)
         return user
 
@@ -30,17 +26,17 @@ def UpdateUser(user_id, new_vals):
         {"user_id" : user_id},
         {"$set": new_vals},
         upsert=True)
-    if verbose:
+    if VERBOSE:
         print("UPDATEUSER:", new_vals)
 
 
 def GetLocation(user_id, _map, location):
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
-        if verbose:
+        if VERBOSE:
             print("GETLOCATION: ", loc)
     for meta in collection.find({"location_id":"meta"}):
-        if verbose:
+        if VERBOSE:
             print("GETLOCATION:", meta)
     loc["type"] = meta["type"]
     loc["start_pos"] = meta["start_pos"]
@@ -51,10 +47,10 @@ def GetLocation(user_id, _map, location):
 
 def LocationDescription(user_id):
     user = GetUser(user_id)
-    if verbose:
+    if VERBOSE:
         print("LOCATIONDESCRIPTION:",user)
     loc = GetLocation(user_id, user["map"], user["location"])
-    if verbose:
+    if VERBOSE:
         print("LOCATIONDESCRIPTION:",loc)
     return loc["name"]+": "+loc["description"]
 
@@ -67,16 +63,7 @@ def healthcheck():
 
 @app.route('/get')
 def get():
-    user_id = int(request.args.get("user"))
-#   print(user_id)
-    user = GetUser(user_id)
-    loc = GetLocation(user_id)
-
-    collection = db[_map]
-    for loc in collection.find({"location_id":loc}):
-        print(loc["name"],loc["description"])
-        
-    return loc["description"]
+    pass
 
 
 # This is the entry point when a command has been issued from the bot.
@@ -85,7 +72,7 @@ def get():
 @app.route('/post', methods=["POST"])
 def testpost():
     user_request = request.get_json(force=True) 
-    if verbose:
+    if VERBOSE:
         print("GETPOST:", user_request)
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
@@ -99,7 +86,7 @@ def testpost():
         reply = "I don't know how to "+command+" "+args
 
     dict_to_send = {"response":"OK","command":user_request["command"],"args":user_request["args"], "reply":reply}
-    if verbose:
+    if VERBOSE:
         print("GETPOST:", dict_to_send)
     return jsonify(dict_to_send)
 
@@ -109,10 +96,10 @@ def testpost():
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
     user = GetUser(user_id)
-    if verbose:
+    if VERBOSE:
         print("MOVE:",user)
     loc = GetLocation(user_id, user["map"], user["location"])
-    if verbose:
+    if VERBOSE:
         print("MOVE:",loc)
 
     direction = args[0].lower()
@@ -154,7 +141,7 @@ def Move(user_id, args):
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
         
-        if verbose:
+        if VERBOSE:
             print("MOVE: old location:", user["location"], "direction:", direction, "new location", new_loc)
 
         # Update the user to show their new location
@@ -163,56 +150,12 @@ def Move(user_id, args):
 
         reply = LocationDescription(user_id)
 
-
     else:
         reply = "That is not a valid move from here!"
 
     return reply
 
-
-
-    #collection = db["users"]
-    #for user in collection.find({"user_id":user_id}):
-    #    print(user["user_id"], user["map"])
-    #    _map = user["map"]
-    #    loc = user["location"]
-        #d = user["_id"]
-
-    #if loc == 1:
-    #    loc = 2
-    #else:
-    #    loc = 1     
-    #new_val = {"location": loc}
-    #result = collection.update_one(
-    #    {"user_id" : user_id},
-    #    {"$set": new_val},
-    #    upsert=True)
- 
-
-    #dictToReturn = {'text':input_json['text']}
-    #print("Recieved data:")
-    #print(dictToReturn)
-    #return jsonify(dictToReturn)
-
-
-# PLAYER MOVEMENT BACKEND (PSEUDO)
-#def move(user_id,moveTo):
-#    input_json = request.get_json(force=True) 
-#    user_id = int(input_json["user"])
-#    collection = db["users"]
-
-#    for user in collection.find({"user_id":user_id}):
-#         loc = user["location"]
-#       collection = db["map_tutorial"]
-#    for locations in collection.find({"location_id":loc}):
-#        allowedMove = location.linksTo
-#    if moveTo is in allowedMove:
-#            update db to moveTo
-#            respond to discord and say the user has moved  
-#    else:
-#            respond to discord and say that you can't travel here OR that this location doesn't exist
-
-
-
-if not PRODUCTION:
+if PRODUCTION:
+    pass
+else:
     app.run(host='localhost', port=8080)
