@@ -4,34 +4,62 @@ from pymongo import MongoClient
 import urllib
 import pprint
 
-app = Flask(__name__)
+verbose = True
 
+app = Flask(__name__)
 client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmonJBwVK0")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
 
-
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
-
 def GetUser(user_id):
     collection = db["users"]
     for user in collection.find({"user_id":user_id}):
+        if verbose:
+            print("GETUSER:", user)
         return user
+
+
+def UpdateUser(user_id, new_vals):
+    collection = db["users"]
+    result = collection.update_one(
+        {"user_id" : user_id},
+        {"$set": new_vals},
+        upsert=True)
+    if verbose:
+        print("UPDATEUSER:", new_vals)
+
 
 def GetLocation(user_id, _map, location):
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
-        return(loc)
+        if verbose:
+            print("GETLOCATION: ", loc)
+    for meta in collection.find({"location_id":"meta"}):
+        if verbose:
+            print("GETLOCATION:", meta)
+    loc["type"] = meta["type"]
+    loc["start_pos"] = meta["start_pos"]
+    if loc["type"] == "grid":
+        loc["width"] == meta["width"]
+    return(loc)
 
 
-#        print(user["user_id"], user["map"])
-#        _map = user["map"]
-#        loc = user["location"]
+def LocationDescription(user_id):
+    user = GetUser(user_id)
+    if verbose:
+        print("LOCATIONDESCRIPTION:",user)
+    loc = GetLocation(user_id, user["map"], user["location"])
+    if verbose:
+        print("LOCATIONDESCRIPTION:",loc)
+    return loc["name"]+": "+loc["description"]
+
 
 # Health check for DigitalOcean
 @app.route('/alive')
 def healthcheck():
     return "The API is functional"
+
 
 @app.route('/get')
 def get():
@@ -46,13 +74,15 @@ def get():
         
     return loc["description"]
 
+
 # This is the entry point when a command has been issued from the bot.
 # Extract the command details from the supplied data and call the appropriate function.
 # Send the reply back to the bot to be displayed to the user.
 @app.route('/post', methods=["POST"])
 def testpost():
     user_request = request.get_json(force=True) 
-    print(user_request)
+    if verbose:
+        print("GETPOST:", user_request)
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
     args = user_request["args"]
@@ -65,6 +95,8 @@ def testpost():
         reply = "I don't know how to "+command+" "+args
 
     dict_to_send = {"response":"OK","command":user_request["command"],"args":user_request["args"], "reply":reply}
+    if verbose:
+        print("GETPOST:", dict_to_send)
     return jsonify(dict_to_send)
 
 # Process the move command.
@@ -73,9 +105,11 @@ def testpost():
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
     user = GetUser(user_id)
-    print("USER:",user)
+    if verbose:
+        print("MOVE:",user)
     loc = GetLocation(user_id, user["map"], user["location"])
-    print("LOC:",loc)
+    if verbose:
+        print("MOVE:",loc)
 
     direction = args[0].lower()
     if direction in ["n", "north"]:
@@ -96,7 +130,36 @@ def Move(user_id, args):
         direction = "nw"
     
     if direction in loc["links_to"]:
-        reply = "Wahey!"
+        if loc["type"] == "grid":
+            # Determine the new cell
+            new_loc = user["location"]
+            if direction == "n":
+                new_loc -= loc["width"]
+            elif direction == "ne":
+                new_loc -= loc["width"] + 1
+            elif direction == "e":
+                new_loc += 1
+            elif direction == "se":
+                new_loc += loc["width"] + 1
+            elif direction == "s":
+                new_loc += loc["width"]
+            elif direction == "sw":
+                new_loc += loc["width"] - 1
+            elif direction == "w":
+                new_loc -= 1
+            elif direction == "nw":
+                new_loc -= loc["width"] - 1
+        
+        if verbose:
+            print("MOVE: old location:", user["location"], "direction:", direction, "new location", new_loc)
+
+        # Update the user to show their new location
+        new_val = {"location": new_loc}
+        UpdateUser(user_id, new_val)
+
+        reply = LocationDescription(user_id)
+
+
     else:
         reply = "That is not a valid move from here!"
 
