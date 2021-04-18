@@ -133,7 +133,7 @@ def Move(user_id, args):
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
         
-        logging.debug(f"{asctime()} MOVE: old location: {user["location"]} direction: {direction} new location {new_loc}")
+        logging.debug(f"{asctime()} MOVE: old location: {user['location']} direction: {direction} new location {new_loc}")
 
         # Update the user to show their new location
         new_val = {"location": new_loc}
