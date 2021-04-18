@@ -4,11 +4,15 @@ from pymongo import MongoClient
 import urllib
 import pprint
 
-verbose = True
 
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmonJBwVK0")+"@rpg-data.avgt0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client["rpg-db"]
+
+
+
+PRODUCTION = True
+verbose = True
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
@@ -209,7 +213,6 @@ def Move(user_id, args):
 #            respond to discord and say that you can't travel here OR that this location doesn't exist
 
 
-#Leave both lines commented out for production with Gunicorn
 
-#app.run(host='0.0.0.0', port=8080)
-#app.run(host='localhost', port=8080)
+if not PRODUCTION:
+    app.run(host='localhost', port=8080)
