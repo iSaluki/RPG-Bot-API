@@ -10,7 +10,7 @@ client = MongoClient("mongodb+srv://discord:"+urllib.parse.quote_plus("79wXglvmo
 db = client["rpg-db"]
 
 
-ENVIRONMENT = production
+ENVIRONMENT = "production"
 
 
 # Database Abstraction
@@ -150,5 +150,5 @@ def Move(user_id, args):
 
 
 
-if ENVIRONMENT != production:
+if ENVIRONMENT != "production":
     app.run(host='localhost', port=8080)
