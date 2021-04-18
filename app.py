@@ -95,7 +95,7 @@ def Move(user_id, args):
     elif direction in ["nw", "north west", "northwest"]:
         direction = "nw"
     
-    if direction in loc["linksTo"]:
+    if direction in loc["links_to"]:
         reply = "Wahey!"
     else:
         reply = "That is not a valid move from here!"
@@ -149,4 +149,4 @@ def Move(user_id, args):
 #Leave both lines commented out for production with Gunicorn
 
 #app.run(host='0.0.0.0', port=8080)
-app.run(host='localhost', port=8080)
+#app.run(host='localhost', port=8080)
