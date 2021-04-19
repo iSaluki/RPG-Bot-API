@@ -86,6 +86,8 @@ def testpost():
 
     if command == "move":
         reply = Move(user_id, args)
+    elif command == "location":
+        reply = LocationDescription(user_id)
     elif command == "get":
         reply = Get(user_id, args)
     else:
