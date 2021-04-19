@@ -7,7 +7,13 @@ import logging
 
 logging.basicConfig(filename="api.log", level=logging.DEBUG)
 app = Flask(__name__)
-client = MongoClient("mongodb+srv://api:"+urllib.parse.quote_plus("ASrBP1PUB6RUwlpk")+"@rpg-data.avgt0.mongodb.net/rpg-db?retryWrites=true&w=majority")
+client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
+
+
+#Old string
+#mongodb+srv://api:"+urllib.parse.quote_plus("ASrBP1PUB6RUwlpk")+"@rpg-data.avgt0.mongodb.net/rpg-db?retryWrites=true&w=majority
+
+
 db = client["rpg-db"]
 PRODUCTION = True
 
