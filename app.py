@@ -62,12 +62,12 @@ def LocationDescription(user_id):
 
 
 # Health check for DigitalOcean
-@app.route('/api/alive')
+@app.route('/alive')
 def HealthCheck():
     return "The API is functional"
 
 
-@app.route('/api/get')
+@app.route('/get')
 def get():
     pass
 
@@ -75,7 +75,7 @@ def get():
 # This is the entry point when a command has been issued from the bot.
 # Extract the command details from the supplied data and call the appropriate function.
 # Send the reply back to the bot to be displayed to the user.
-@app.route('/api/post', methods=["POST"])
+@app.route('/post', methods=["POST"])
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
     user_request = request.get_json(force=True) 
