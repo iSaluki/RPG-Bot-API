@@ -20,7 +20,7 @@ PRODUCTION = True
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 def GetUser(user_id):
-    loggin.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
     collection = db["users"]
     for user in collection.find({"user_id":user_id}):
         logging.debug(f"{asctime()} GETUSER: {user}")
@@ -28,7 +28,7 @@ def GetUser(user_id):
 
 
 def UpdateUser(user_id, new_vals):
-    loggin.debug(f"{asctime()} UPDATEUSER: passed in user_id = {user_id}, new_vals = {new_vals}")
+    logging.debug(f"{asctime()} UPDATEUSER: passed in user_id = {user_id}, new_vals = {new_vals}")
     collection = db["users"]
     result = collection.update_one(
         {"user_id" : user_id},
@@ -38,7 +38,7 @@ def UpdateUser(user_id, new_vals):
 
 
 def GetLocation(user_id, _map, location):
-    loggin.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {map}, location = {location}")
+    logging.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {map}, location = {location}")
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
         logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
@@ -52,7 +52,7 @@ def GetLocation(user_id, _map, location):
 
 
 def LocationDescription(user_id):
-    loggin.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in user_id = {user_id}")
     user = GetUser(user_id)
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
     loc = GetLocation(user_id, user["map"], user["location"])
@@ -77,6 +77,7 @@ def get():
 # Send the reply back to the bot to be displayed to the user.
 @app.route('/post', methods=["POST"])
 def testpost():
+    logging.debug(f"{asctime()} TESTPOST: started")
     user_request = request.get_json(force=True) 
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
@@ -99,7 +100,7 @@ def testpost():
 # Move to that location and build the new location's description as the reply.
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
-    loggin.debug(f"{asctime()} MOVE: passed in user_id = {user_id}, args = {args}")
+    logging.debug(f"{asctime()} MOVE: passed in user_id = {user_id}, args = {args}")
 
     user = GetUser(user_id)
     logging.debug(f"{asctime()} MOVE: user = {user}")
