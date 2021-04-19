@@ -81,10 +81,8 @@ def testpost():
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
-    try:
-        args = user_request["args"]
-    except:
-        args = user_request[""]
+    args = user_request["args"]
+
 
     if command == "buy":
         reply = "This has yet to be implented!"
