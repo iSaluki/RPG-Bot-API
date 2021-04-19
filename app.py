@@ -81,8 +81,8 @@ def testpost():
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
-    args = user_request["args"]
-
+    if args in user_request:
+        args = user_request["args"]
 
     if command == "buy":
         reply = "This has yet to be implented!"
@@ -112,6 +112,7 @@ def testpost():
     dict_to_send = {"response":"OK","command":user_request["command"],"args":user_request["args"], "reply":reply}
     logging.debug(f"{asctime()} GETPOST: dict_to_send = {dict_to_send}")
     return jsonify(dict_to_send)
+
 
 # Process the move command.
 # Make sure the desired move is possible.
