@@ -93,7 +93,7 @@ def testpost():
         argsIncluded = True
 
 
-     notImplemented = x_emoji+" This feature has not yet been implemented"
+    notImplemented = x_emoji+" This feature has not yet been implemented"
 
     if command == "buy":
         reply = notImplemented
