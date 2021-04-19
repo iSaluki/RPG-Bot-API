@@ -81,8 +81,10 @@ def testpost():
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
+    argsIncluded = False
     if "args" in user_request:
         args = user_request["args"]
+        argsIncluded = True
 
     if command == "buy":
         reply = "This has yet to be implented!"
@@ -109,7 +111,10 @@ def testpost():
     else:
         reply = "I don't know how to "+command+" "+args
 
-    dict_to_send = {"response":"OK","command":user_request["command"],"args":user_request["args"], "reply":reply}
+    if argsIncluded:
+        dict_to_send = {"response":"OK", "command":user_request["command"], "args":user_request["args"], "reply":reply}
+    else:
+        dict_to_send = {"response":"OK", "command":user_request["command"], "reply":reply}
     logging.debug(f"{asctime()} GETPOST: dict_to_send = {dict_to_send}")
     return jsonify(dict_to_send)
 
