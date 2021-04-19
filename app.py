@@ -84,8 +84,8 @@ def testpost():
     try:
         args = user_request["args"]
     except:
-        pass
-
+        args = ""
+        
     if command == "buy":
         reply = "This has yet to be implented!"
     elif command == "drop":
