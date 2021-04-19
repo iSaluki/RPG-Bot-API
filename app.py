@@ -84,12 +84,28 @@ def testpost():
     command = user_request["command"].lower()
     args = user_request["args"]
 
-    if command == "move":
-        reply = Move(user_id, args)
+    if command == "buy":
+        reply = "This has yet to be implented!"
+    elif command == "drop":
+        reply = "This has yet to be implented!"
+    elif command == "fight":
+        reply = "This has yet to be implented!"
+    elif command == "get":
+        reply = "This has yet to be implented!"
+    elif command == "inventory":
+        reply = "This has yet to be implented!"
     elif command == "location":
         reply = LocationDescription(user_id)
-    elif command == "get":
-        reply = Get(user_id, args)
+    elif command == "move":
+        reply = Move(user_id, args)
+    elif command == "open":
+        reply = "This has yet to be implented!"
+    elif command == "sell":
+        reply = "This has yet to be implented!"
+    elif command == "trade":
+        reply = "This has yet to be implented!"
+    elif command == "use":
+        reply = "This has yet to be implented!"
     else:
         reply = "I don't know how to "+command+" "+args
 
