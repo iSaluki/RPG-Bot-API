@@ -81,7 +81,7 @@ def testpost():
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
-    if args in user_request:
+    if "args" in user_request:
         args = user_request["args"]
 
     if command == "buy":
