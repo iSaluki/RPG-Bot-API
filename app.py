@@ -16,7 +16,6 @@ client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.
 
 db = client["rpg-db"]
 PRODUCTION = True
-
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 def GetUser(user_id):
@@ -82,10 +81,8 @@ def testpost():
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
-    if args in locals():
-        args = user_request["args"]
-    else:
-        pass
+    args = user_request["args"]
+
 
     if command == "buy":
         reply = "This has yet to be implented!"
