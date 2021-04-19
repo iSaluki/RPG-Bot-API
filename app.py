@@ -16,6 +16,11 @@ client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.
 
 db = client["rpg-db"]
 PRODUCTION = True
+
+# Emojis
+
+x_emoji = "<:X_:833700097903689728>"
+
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
 def GetUser(user_id):
@@ -24,6 +29,7 @@ def GetUser(user_id):
     for user in collection.find({"user_id":user_id}):
         logging.debug(f"{asctime()} GETUSER: {user}")
         return user
+
 
 
 def UpdateUser(user_id, new_vals):
@@ -61,12 +67,12 @@ def LocationDescription(user_id):
 
 
 # Health check for DigitalOcean
-@app.route('/alive')
+@app.route('/api/alive')
 def HealthCheck():
     return "The API is functional"
 
 
-@app.route('/get')
+@app.route('/api/get')
 def get():
     pass
 
@@ -74,7 +80,7 @@ def get():
 # This is the entry point when a command has been issued from the bot.
 # Extract the command details from the supplied data and call the appropriate function.
 # Send the reply back to the bot to be displayed to the user.
-@app.route('/post', methods=["POST"])
+@app.route('/api/post', methods=["POST"])
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
     user_request = request.get_json(force=True) 
@@ -86,28 +92,31 @@ def testpost():
         args = user_request["args"]
         argsIncluded = True
 
+
+     notImplemented = x_emoji+" This feature has not yet been implemented"
+
     if command == "buy":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "drop":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "fight":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "get":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "inventory":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "location":
         reply = LocationDescription(user_id)
     elif command == "move":
         reply = Move(user_id, args)
     elif command == "open":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "sell":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "trade":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     elif command == "use":
-        reply = "This has yet to be implented!"
+        reply = notImplemented
     else:
         reply = "I don't know how to "+command+" "+args
 
