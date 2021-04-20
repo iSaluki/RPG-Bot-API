@@ -9,11 +9,6 @@ logging.basicConfig(filename="api.log", level=logging.DEBUG)
 app = Flask(__name__)
 client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
 
-
-#Old string
-#mongodb+srv://api:"+urllib.parse.quote_plus("ASrBP1PUB6RUwlpk")+"@rpg-data.avgt0.mongodb.net/rpg-db?retryWrites=true&w=majority
-
-
 db = client["rpg-db"]
 PRODUCTION = True
 
@@ -23,6 +18,8 @@ x_emoji = "<:X_:833700097903689728>"
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
+
+# Returns the details of the current user
 def GetUser(user_id):
     logging.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
     collection = db["users"]
@@ -31,7 +28,7 @@ def GetUser(user_id):
         return user
 
 
-
+# Modifies the current user's details. new_vals is a dictionary with the changes/additions
 def UpdateUser(user_id, new_vals):
     logging.debug(f"{asctime()} UPDATEUSER: passed in user_id = {user_id}, new_vals = {new_vals}")
     collection = db["users"]
@@ -42,6 +39,7 @@ def UpdateUser(user_id, new_vals):
     logging.debug(f"{asctime()} UPDATEUSER: new_vals = {new_vals}")
 
 
+# Get details of the current location
 def GetLocation(user_id, _map, location):
     logging.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {map}, location = {location}")
     collection = db[_map]
@@ -56,6 +54,7 @@ def GetLocation(user_id, _map, location):
     return(loc)
 
 
+# Get the description of the current location for the user
 def LocationDescription(user_id):
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in user_id = {user_id}")
     user = GetUser(user_id)
@@ -63,7 +62,6 @@ def LocationDescription(user_id):
     loc = GetLocation(user_id, user["map"], user["location"])
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
     return loc["name"]+": "+loc["description"]
-
 
 
 # Health check for DigitalOcean
@@ -92,9 +90,7 @@ def testpost():
         args = user_request["args"]
         argsIncluded = True
 
-
     notImplemented = x_emoji+" This feature has not yet been implemented"
-
     if command == "buy":
         reply = notImplemented
     elif command == "drop":
