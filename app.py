@@ -39,8 +39,8 @@ def UpdateUser(user_id, new_vals):
 
 
 # Get details of the current location
-def GetLocation(user_id, _map, location):
-    logging.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {_map}, location = {location}")
+def GetLocation(_map, location):
+    logging.debug(f"{asctime()} GETLOCATION: passed in _map = {_map}, location = {location}")
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
         logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
@@ -54,11 +54,11 @@ def GetLocation(user_id, _map, location):
 
 
 # Get the description of the current location for the user
-def LocationDescription(user_id):
-    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in user_id = {user_id}")
-    user = GetUser(user_id)
-    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
-    loc = GetLocation(user_id, user["map_name"], user["location_id"])
+def LocationDescription(_map, location):
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in _map = {_map}, location = {location}")
+#    user = GetUser(user_id)
+#    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
+    loc = GetLocation(_map, location)
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
     return loc["name"]+": "+loc["description"]
 
@@ -101,7 +101,7 @@ def testpost():
     elif command == "inventory":
         reply = notImplemented
     elif command == "location":
-        reply = LocationDescription(user_id)
+        reply = Location(user_id)
     elif command == "move":
         reply = Move(user_id, args)
     elif command == "open":
@@ -123,6 +123,18 @@ def testpost():
     return jsonify(dict_to_send)
 
 
+# Process the location command.
+# Get the user so we can extract their current location.
+# Use the LocationDescription function to get the description for the user location.
+def Location(user_id):
+    logging.debug(f"{asctime()} LOCATION: passed in user_id = {user_id}")
+
+    user = GetUser(user_id)
+    logging.debug(f"{asctime()} LOCATION: user = {user}")
+
+    return LocationDescription(user["map_name"], user["location_id"])
+
+
 # Process the move command.
 # Make sure the desired move is possible.
 # Move to that location and build the new location's description as the reply.
@@ -133,7 +145,7 @@ def Move(user_id, args):
     user = GetUser(user_id)
     logging.debug(f"{asctime()} MOVE: user = {user}")
 
-    loc = GetLocation(user_id, user["map_name"], user["location_id"])
+    loc = GetLocation(user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} MOVE: loc = {loc}")
 
     direction = args[0].lower()
@@ -181,7 +193,7 @@ def Move(user_id, args):
         new_val = {"location_id": new_loc}
         UpdateUser(user_id, new_val)
 
-        reply = LocationDescription(user_id)
+        reply = LocationDescription(user["map_name"], new_loc)
 
     else:
         reply = "That is not a valid move from here!"
