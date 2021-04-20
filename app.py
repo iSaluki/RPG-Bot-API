@@ -47,7 +47,7 @@ def GetLocation(_map, location):
     for meta in collection.find({"location_id":"meta"}):
         logging.debug(f"{asctime()} GETLOCATION: meta = {meta}")
     loc["type"] = meta["type"]
-    loc["start_pos"] = meta["start_pos"]
+    loc["start_location"] = meta["start_location"]
     if meta["type"] == "grid":
         loc["width"] = meta["width"]
     return(loc)
