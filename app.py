@@ -13,7 +13,6 @@ db = client["rpg-db"]
 PRODUCTION = True
 
 # Emojis
-
 x_emoji = "<:X_:833700097903689728>"
 
 # Database Abstraction
@@ -36,12 +35,12 @@ def UpdateUser(user_id, new_vals):
         {"user_id" : user_id},
         {"$set": new_vals},
         upsert=True)
-    logging.debug(f"{asctime()} UPDATEUSER: new_vals = {new_vals}")
+    logging.debug(f"{asctime()} UPDATEUSER: SUCCESS")
 
 
 # Get details of the current location
 def GetLocation(user_id, _map, location):
-    logging.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {map}, location = {location}")
+    logging.debug(f"{asctime()} GETLOCATION: passed in user_id = {user_id}, map = {_map}, location = {location}")
     collection = db[_map]
     for loc in collection.find({"location_id":location}):
         logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
@@ -59,7 +58,7 @@ def LocationDescription(user_id):
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in user_id = {user_id}")
     user = GetUser(user_id)
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
-    loc = GetLocation(user_id, user["map"], user["location"])
+    loc = GetLocation(user_id, user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
     return loc["name"]+": "+loc["description"]
 
@@ -134,7 +133,7 @@ def Move(user_id, args):
     user = GetUser(user_id)
     logging.debug(f"{asctime()} MOVE: user = {user}")
 
-    loc = GetLocation(user_id, user["map"], user["location"])
+    loc = GetLocation(user_id, user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} MOVE: loc = {loc}")
 
     direction = args[0].lower()
@@ -176,10 +175,10 @@ def Move(user_id, args):
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
         
-        logging.debug(f"{asctime()} MOVE: old location: {user['location']} direction: {direction} new location {new_loc}")
+        logging.debug(f"{asctime()} MOVE: old location: {user['location_id']} direction: {direction} new location {new_loc}")
 
         # Update the user to show their new location
-        new_val = {"location": new_loc}
+        new_val = {"location_id": new_loc}
         UpdateUser(user_id, new_val)
 
         reply = LocationDescription(user_id)
