@@ -33,7 +33,7 @@ x_emoji = "<:X_:833700097903689728>"
 
 def Authenticate(authHeader):
     logging.debug(f"{asctime()} AUTHENTICATION: Starting")
-    print(authHeader)
+    logging.debug(f"{asctime()} authHeader: "+authHeader)
     if authHeader == authToken:
         return True
         logging.debug(f"{asctime()} AUTHENTICATION: Approved")
