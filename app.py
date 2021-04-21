@@ -28,10 +28,10 @@ def Authenticate(authHeader):
     logging.debug(f"{asctime()} AUTHENTICATION: Starting")
     logging.debug(f"{asctime()} authHeader: "+authHeader)
     if authHeader == authToken:
-        return authenticated = True
+        return True
         logging.debug(f"{asctime()} AUTHENTICATION: Approved")
     else:
-        return authenticated = False
+        return False
         logging.critical(f"{asctime()} AUTHENTICATION: Rejected")
 
 # Database Abstraction
@@ -102,7 +102,7 @@ def testpost():
     authenticated = False
     user_request = request.get_json(force=True) 
     authHeader = request.headers.get('Authentication')
-    Authenticate(authHeader)
+    authenticated = Authenticate(authHeader)
     logging.debug(f"{asctime()} SECURITY: Auth header sent")
     if authenticated:
         pass
