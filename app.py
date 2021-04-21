@@ -18,12 +18,15 @@ authToken = "eyJhbGciOiJQUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 x_emoji = "<:X_:833700097903689728>"
 
 
-def Authenticate(token, headers):
-    receivedToken = request.headers.get('Authentication')
-    if token == receivedToken:
+def Authenticate(authHeader):
+    logging.debug(f"{asctime()} AUTHENTICATION: Starting")
+    token = authHeader
+    if token == authToken:
         return True
+        logging.debug(f"{asctime()} AUTHENTICATION: Approved")
     else:
         return False
+        logging.critical(f"{asctime()} AUTHENTICATION: Rejected")
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
@@ -91,7 +94,16 @@ def get():
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
     user_request = request.get_json(force=True) 
-    print(user_request)
+    authHeader = request.headers.get('Authentication')
+    Authenticate(authHeader)
+    logging.debug(f"{asctime()} SECURITY: Auth header sent")
+    if True:
+        pass
+        logging.debug(f"{asctime()} SECURITY: Auth header approved")
+    else:
+        return "Authentication Error"
+        logging.critical(f"{asctime()} SECURITY: Auth header rejected")
+
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
