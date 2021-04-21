@@ -18,7 +18,8 @@ else:
     PRODUCTION = False
     logging.debug(f"{asctime()} ENVIRONMENT: Unable to find PRODUCTION, set it to False")
 
-    
+#PRODUCTION = True
+
 app = Flask(__name__)
 client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
 
