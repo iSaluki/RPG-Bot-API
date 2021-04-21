@@ -98,7 +98,6 @@ def get():
 @app.route('/api/post', methods=["POST"])
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
-    user_request = request.get_json(force=True) 
     authHeader = request.headers.get('Authentication')
     authenticated = Authenticate(authHeader)
     logging.debug(f"{asctime()} SECURITY: Auth header sent")
@@ -109,6 +108,7 @@ def testpost():
         return "Authentication Error"
         logging.critical(f"{asctime()} SECURITY: Auth header rejected")
 
+    user_request = request.get_json(force=True) 
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
