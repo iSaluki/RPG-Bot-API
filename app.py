@@ -28,10 +28,10 @@ def Authenticate(authHeader):
     logging.debug(f"{asctime()} AUTHENTICATION: Starting")
     logging.debug(f"{asctime()} authHeader: "+authHeader)
     if authHeader == authToken:
-        return True
+        return authenticated = True
         logging.debug(f"{asctime()} AUTHENTICATION: Approved")
     else:
-        return False
+        return authenticated = False
         logging.critical(f"{asctime()} AUTHENTICATION: Rejected")
 
 # Database Abstraction
@@ -99,11 +99,12 @@ def get():
 @app.route('/api/post', methods=["POST"])
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
+    authenticated = False
     user_request = request.get_json(force=True) 
     authHeader = request.headers.get('Authentication')
     Authenticate(authHeader)
     logging.debug(f"{asctime()} SECURITY: Auth header sent")
-    if True:
+    if authenticated:
         pass
         logging.debug(f"{asctime()} SECURITY: Auth header approved")
     else:
