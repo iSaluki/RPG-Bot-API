@@ -80,7 +80,7 @@ def GetInventoryDescriptions(user_id):
     inv = []
     for user_item in user_items.find({"user_id":user_id, "status":"inventory"}):
         for item in items.find({"item_id":user_item["item_id"]}):
-            inv.append(item["emoji"]+item["description"])
+            inv.append(item["emoji"]+" "+item["description"])
             logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: item = {item}")
     logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: returning {inv}")
     return inv
