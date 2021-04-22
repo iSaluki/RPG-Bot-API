@@ -266,7 +266,7 @@ def Move(user_id, args):
     if direction in loc["links_to"]:
         if loc["type"] == "grid":
             # Determine the new cell
-            new_loc = user["location"]
+            new_loc = user["location_id"]
             if direction == "n":
                 new_loc -= loc["width"]
             elif direction == "ne":
