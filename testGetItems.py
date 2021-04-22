@@ -14,7 +14,19 @@ def GetUser(user_id):
         logging.debug(f"{asctime()} GETUSER: {user}")
         return user
 
+
 def GetInventory(user_id):
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
+    user_items = db["user_items"]
+    items = db["items"]
+    inv = []
+    for user_item in user_items.find({"user_id":user_id, "status":"inventory"}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            inv.append({"item_id":item["item_id"], "description":item["description"], "gettable":item["gettable"], "universal":item["universal"]})
+    return inv
+
+def GetInventoryDescriptions(user_id):
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
     user_items = db["user_items"]
     items = db["items"]
     inv = []
@@ -22,6 +34,24 @@ def GetInventory(user_id):
         for item in items.find({"item_id":user_item["item_id"]}):
             inv.append(item["description"])
     return inv
+
+def GetPlayerItemsAtLocation(user_id, _map, location):
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id = {user_id}, _map = {_map}, location = {location}")
+    user_items = db["user_items"]
+    items = db["items"]
+    user_items_here = []
+    for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            user_items_here.append({"item_id":item["item_id"], "description":item["description"], "gettable":item["gettable"], "universal":item["universal"]})
+    return user_items_here
+
+def GetDefaultItemsAtLocation(_map, location):
+    logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: passed in _map = {_map}, location = {location}")
+    items = db["items"]
+    default_items_here = []
+    for item in items.find({"map_name":_map, "location_id":location}):
+        default_items_here.append({"item_id":item["item_id"], "description":item["description"], "gettable":item["gettable"], "universal":item["universal"]})
+    return default_items_here
 
 def GetItems(user_id, _map, location):
     logging.debug(f"{asctime()} GETITEMS: passed in user_id = {user_id}, map_name = {_map}, location_id = {location}")
