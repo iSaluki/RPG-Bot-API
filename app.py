@@ -73,9 +73,6 @@ def GetInventory(user_id):
         for item in items.find({"item_id":user_item["item_id"]}):
             inv.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
             logging.debug(f"{asctime()} GETINVENTORY: item = {item}")
-            if inv == "":
-                inv = x_emoji+" Nothing in your inventory!"
-                logging.debug(f"{asctime()} GETINVENTORY: Inventory empty, returning placeholder")
     logging.debug(f"{asctime()} GETINVENTORY: returning {inv}")
     return inv
 
@@ -197,9 +194,13 @@ def testpost():
         reply = notImplemented
     elif command == "inventory":
         inventory = GetInventoryDescriptions(user_id)
-        reply = ""
-        for item in inventory:
-            reply += item + "\n"
+        if len(inventory) == 0:
+            reply = x_emoji+" Nothing in your inventory!"
+            logging.debug(f"{asctime()} TESTPOST: Inventory empty, returning placeholder")
+        else:
+            reply = ""
+            for item in inventory:
+                reply += item + "\n"
     elif command == "location":
         reply = Location(user_id)
     elif command == "move":
