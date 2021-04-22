@@ -73,6 +73,9 @@ def GetInventory(user_id):
         for item in items.find({"item_id":user_item["item_id"]}):
             inv.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
             logging.debug(f"{asctime()} GETINVENTORY: item = {item}")
+            if inv == "":
+                inv = x_emoji+" Nothing in your inventory!"
+                logging.debug(f"{asctime()} GETINVENTORY: Inventory empty, returning placeholder")
     logging.debug(f"{asctime()} GETINVENTORY: returning {inv}")
     return inv
 
