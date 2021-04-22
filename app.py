@@ -297,8 +297,7 @@ def Move(user_id, args):
         reply = LocationDescription(user["map_name"], new_loc)
 
     else:
-        reply = "That is not a valid move from here!"
-
+        reply = x_emoji+"That is not a valid move from here!"
     return reply
 
 if PRODUCTION:
