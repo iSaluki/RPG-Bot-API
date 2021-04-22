@@ -21,8 +21,8 @@ x_emoji = "<:X_:833700097903689728>"
 # Returns the details of the current user
 def GetUser(user_id):
     logging.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
-    collection = db["users"]
-    for user in collection.find({"user_id":user_id}):
+    users = db["users"]
+    for user in users.find({"user_id":user_id}):
         logging.debug(f"{asctime()} GETUSER: {user}")
         return user
 
@@ -30,21 +30,79 @@ def GetUser(user_id):
 # Modifies the current user's details. new_vals is a dictionary with the changes/additions
 def UpdateUser(user_id, new_vals):
     logging.debug(f"{asctime()} UPDATEUSER: passed in user_id = {user_id}, new_vals = {new_vals}")
-    collection = db["users"]
-    result = collection.update_one(
+    users = db["users"]
+    result = users.update_one(
         {"user_id" : user_id},
         {"$set": new_vals},
         upsert=True)
     logging.debug(f"{asctime()} UPDATEUSER: SUCCESS")
 
 
+# Gets the user's inventory and returns list of dicts of each item and it's details
+# Compare to GetInventoryDescriptions
+def GetInventory(user_id):
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
+    user_items = db["user_items"]
+    items = db["items"]
+    inv = []
+    for user_item in user_items.find({"user_id":user_id, "status":"inventory"}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            inv.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+            logging.debug(f"{asctime()} GETINVENTORY: item = {item}")
+    logging.debug(f"{asctime()} GETINVENTORY: returning {inv}")
+    return inv
+
+
+# Gets a list of inventory items and returns a list of their descriptions only
+# Compare to GetInventory
+def GetInventoryDescriptions(user_id):
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
+    user_items = db["user_items"]
+    items = db["items"]
+    inv = []
+    for user_item in user_items.find({"user_id":user_id, "status":"inventory"}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            inv.append(item["emoji"]+item["description"])
+            logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: item = {item}")
+    logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: returning {inv}")
+    return inv
+
+
+# Get the items that the player has dropped at the given location
+# Returns a list of dictionaries, one for each item. Full details returned
+def GetPlayerItemsAtLocation(user_id, _map, location):
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id = {user_id}, _map = {_map}, location = {location}")
+    user_items = db["user_items"]
+    items = db["items"]
+    user_items_here = []
+    for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+            logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: item = {item}")
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: returning {user_items_here}")
+    return user_items_here
+
+
+# Get the default items for a given map location
+# Returns a list of dictionaries, one for each item. Full details returned
+def GetDefaultItemsAtLocation(_map, location):
+    logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: passed in _map = {_map}, location = {location}")
+    items = db["items"]
+    default_items_here = []
+    for item in items.find({"map_name":_map, "location_id":location}):
+        logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: item = {item}")
+        default_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+    logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: returning {default_items_here}")
+    return default_items_here
+
+
 # Get details of the current location
 def GetLocation(_map, location):
     logging.debug(f"{asctime()} GETLOCATION: passed in _map = {_map}, location = {location}")
-    collection = db[_map]
-    for loc in collection.find({"location_id":location}):
+    this_map = db[_map]
+    for loc in this_map.find({"location_id":location}):
         logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
-    for meta in collection.find({"location_id":"meta"}):
+    for meta in this_map.find({"location_id":"meta"}):
         logging.debug(f"{asctime()} GETLOCATION: meta = {meta}")
     loc["type"] = meta["type"]
     loc["start_location"] = meta["start_location"]
@@ -99,7 +157,10 @@ def testpost():
     elif command == "get":
         reply = notImplemented
     elif command == "inventory":
-        reply = notImplemented
+        inventory = GetInventoryDescriptions(user_id)
+        reply = ""
+        for item in inventory:
+            reply += item + "\n"
     elif command == "location":
         reply = Location(user_id)
     elif command == "move":
