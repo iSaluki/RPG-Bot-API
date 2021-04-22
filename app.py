@@ -37,7 +37,7 @@ def Authenticate(authHeader):
 def UserCheck(user_id):
     logging.debug(f"{asctime()} USERCHECK: passed in user_id = {user_id}")
     users = db["users"]
-    if users.countDocuments({"user_id":user_id}) == 0:
+    if users.count_documents({"user_id":user_id}) == 0:
         logging.debug(f"{asctime()} USERCHECK: user_id = {user_id} does not exist")
         user.insert_one({"user_id":user_id, "map_name":"map_tutorial", "location_id":51})
 
