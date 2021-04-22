@@ -4,16 +4,34 @@ from pymongo import MongoClient
 import urllib
 from time import asctime
 import logging
+import os
 
 logging.basicConfig(filename="api.log", level=logging.DEBUG)
+
+
+
+
+PRODUCTION = True
+
 app = Flask(__name__)
 client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
 
 db = client["rpg-db"]
-PRODUCTION = True
+
+authToken = "eyJhbGciOiJQUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.MqF1AKsJkijKnfqEI3VA1OnzAL2S4eIpAuievMgD3tEFyFMU67gCbg-fxsc5dLrxNwdZEXs9h0kkicJZ70mp6p5vdv-j2ycDKBWg05Un4OhEl7lYcdIsCsB8QUPmstF-lQWnNqnq3wra1GynJrOXDL27qIaJnnQKlXuayFntBF0j-82jpuVdMaSXvk3OGaOM-7rCRsBcSPmocaAO-uWJEGPw_OWVaC5RRdWDroPi4YL4lTkDEC-KEvVkqCnFm_40C-T_siXquh5FVbpJjb3W2_YvcqfDRj44TsRrpVhk6ohsHMNeUad_cxnFnpolIKnaXq_COv35e9EgeQIPAbgIeg"
 
 # Emojis
 x_emoji = "<:X_:833700097903689728>"
+
+
+def Authenticate(authHeader):
+    logging.debug(f"{asctime()} AUTHENTICATION: Starting")
+    if authHeader == authToken:
+        logging.debug(f"{asctime()} AUTHENTICATION: Approved")
+        return True
+    else:
+        logging.critical(f"{asctime()} AUTHENTICATION: Rejected")
+        return False
 
 # Database Abstraction
 # A collection of functions to get data from the database and to write to the database
@@ -138,6 +156,16 @@ def get():
 @app.route('/api/post', methods=["POST"])
 def testpost():
     logging.debug(f"{asctime()} TESTPOST: started")
+    authHeader = request.headers.get('Authentication')
+    authenticated = Authenticate(authHeader)
+    logging.debug(f"{asctime()} SECURITY: Auth header sent")
+    if authenticated:
+        pass
+        logging.debug(f"{asctime()} SECURITY: Auth header approved")
+    else:
+        return "Authentication Error"
+        logging.critical(f"{asctime()} SECURITY: Auth header rejected")
+
     user_request = request.get_json(force=True) 
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
