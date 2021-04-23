@@ -20,7 +20,8 @@ authToken = "eyJhbGciOiJQUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 # Emojis
 x_emoji = "<:X_:833700097903689728>"
 
-
+# Authentication
+# Checks the request came from an authorized source.
 def Authenticate(authHeader):
     logging.debug(f"{asctime()} AUTHENTICATION: Starting")
     if authHeader == authToken:
@@ -190,13 +191,13 @@ def testpost():
         reply = notImplemented
     elif command == "fight":
         reply = notImplemented
-    elif command == "get":
+    elif command == "search":
         reply = notImplemented
     elif command == "inventory":
         inventory = GetInventoryDescriptions(user_id)
         if len(inventory) == 0:
             reply = x_emoji+" Nothing in your inventory!"
-            logging.debug(f"{asctime()} TESTPOST: Inventory empty, returning placeholder")
+            logging.debug(f"{asctime()} INVENTORY: Inventory empty, returning placeholder")
         else:
             reply = ""
             for item in inventory:
@@ -214,7 +215,7 @@ def testpost():
     elif command == "use":
         reply = notImplemented
     else:
-        reply = "I don't know how to "+command+" "+args
+        reply = "Unknown command, "+command+" "+args
 
     if argsIncluded:
         dict_to_send = {"response":"OK", "command":user_request["command"], "args":user_request["args"], "reply":reply}
@@ -234,6 +235,12 @@ def Location(user_id):
     logging.debug(f"{asctime()} LOCATION: user = {user}")
 
     return LocationDescription(user["map_name"], user["location_id"])
+
+# Process the search command.
+# Find objects that the user can pickup in their current location
+# And then pick them up
+# To implement
+
 
 
 # Process the move command.
