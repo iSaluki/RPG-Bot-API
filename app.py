@@ -121,6 +121,18 @@ def GetDefaultItemsAtLocation(_map, location):
     return default_items_here
 
 
+# Get a list of objects that the user should see at this location. Take account of their inventory and what they have previously dropped.
+def GetPlayerItemsAtLocation(user_id, _map, location):
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id = {user_id}, _map = {_map}, location = {location}")
+    user_items = db["user_items"]
+    items = db["items"]
+    user_items_here = []
+    for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+    return user_items_here
+
+
 # Get details of the current location
 def GetLocation(_map, location):
     logging.debug(f"{asctime()} GETLOCATION: passed in _map = {_map}, location = {location}")
@@ -234,7 +246,13 @@ def Location(user_id):
     user = GetUser(user_id)
     logging.debug(f"{asctime()} LOCATION: user = {user}")
 
-    return LocationDescription(user["map_name"], user["location_id"])
+    description = LocationDescription(user["map_name"], user["location_id"])
+    items_here = GetPlayerItemsAtLocation(user_id, user["map_name"], user["location_id"])
+
+    if len(items_here) > 0:
+        for item in items_here:
+            description += "\n" + item["emoji"] + " " + item["description"]
+    return description
 
 # Process the search command.
 # Find objects that the user can pickup in their current location
