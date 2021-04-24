@@ -69,6 +69,16 @@ def GetItemsForUserAtLocation(user_id, _map, location):
     
     return user_items
 
+def GetPlayerItemsAtLocation(user_id, _map, location):
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id={user_id}, _map={_map}, location={location}")
+    user_items = db["user_items"]
+    items = db["items"]
+    user_items_here = []
+    for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
+        for item in items.find({"item_id":user_item["item_id"]}):
+            user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+    return user_items_here
+    
 #print(GetInventory(183240527649570816))
 #print(GetItems(183240527649570816, "map_tutorial", 72))
 '''

@@ -124,12 +124,24 @@ def GetDefaultItemsAtLocation(_map, location):
 # Get a list of objects that the user should see at this location. Take account of their inventory and what they have previously dropped.
 def GetPlayerItemsAtLocation(user_id, _map, location):
     logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id={user_id}, _map={_map}, location={location}")
-    user_items = db["user_items"]
-    items = db["items"]
-    user_items_here = []
-    for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
-        for item in items.find({"item_id":user_item["item_id"]}):
-            user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+    #user_items = db["user_items"]
+    #items = db["items"]
+    #user_items_here = []
+    #for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
+    #    for item in items.find({"item_id":user_item["item_id"]}):
+    #        user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
+
+    default_items = GetDefaultItemsAtLocation(_map, location)
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: default_items = {default_items}")
+    user_items_here = GetPlayerItemsAtLocation(user_id, _map, location)
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: user_items = {user_items}")
+    inventory = GetInventory(user_id)
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: inventory = {inventory}")
+
+    for item in default_items:
+        if item not in user_items and item not in inventory:
+            user_items_here.append(item)
+    
     return user_items_here
 
 
