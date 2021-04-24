@@ -5,7 +5,7 @@ from time import asctime
 client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = client["rpg-db"]
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 def GetUser(user_id):
     logging.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
@@ -54,7 +54,7 @@ def GetDefaultItemsAtLocation(_map, location):
     return default_items_here
 
 def GetItemsForUserAtLocation(user_id, _map, location):
-    logging.debug(f"{asctime()} GETITEMSFORUSERATLOCATION: passed in user_id = {user_id}, map_name = {_map}, location_id = {location}")
+    logging.info(f"{asctime()} GETITEMSFORUSERATLOCATION: passed in user_id = {user_id}, map_name = {_map}, location_id = {location}")
     
     default_items = GetDefaultItemsAtLocation(_map, location)
     logging.debug(f"{asctime()} GETITEMSFORUSERATLOCATION: default_items = {default_items}")
@@ -78,7 +78,7 @@ def GetPlayerItemsAtLocation(user_id, _map, location):
         for item in items.find({"item_id":user_item["item_id"]}):
             user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
     return user_items_here
-    
+
 #print(GetInventory(183240527649570816))
 #print(GetItems(183240527649570816, "map_tutorial", 72))
 '''
