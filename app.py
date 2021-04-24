@@ -350,7 +350,7 @@ def PickUp(user_id, args):
     item_to_pickup = args[0].lower()
     item_id_to_pickup = -1
     for item in items_here:
-        if item["descritiption"] == item_to_pickup:
+        if item["description"] == item_to_pickup:
             if item["gettable"]:
                 item_id_to_pickup = item["item_id"]
             else:
