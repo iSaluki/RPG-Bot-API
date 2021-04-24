@@ -141,17 +141,17 @@ def GetPlayerItemsDroppedAtLocation(user_id, _map, location):
 # THIS: Includes the items from GetPlayerItemsAtLocation, but also includes the default items at this location that the user has not already interacted with
 def GetItemsForUserAtLocation(user_id, _map, location):
     default_items = GetDefaultItemsAtLocation(_map, location)
-    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: default_items = {default_items}")
-    user_items_here = GetPlayerItemsDroppedAtLocation(user_id, _map, location)
-    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: user_items = {user_items}")
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: default_items={default_items}")
+    user_items = GetPlayerItemsDroppedAtLocation(user_id, _map, location)
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: user_items={user_items}")
     inventory = GetInventory(user_id)
-    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: inventory = {inventory}")
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: inventory={inventory}")
 
     for item in default_items:
         if item not in user_items and item not in inventory:
-            user_items_here.append(item)
+            user_items.append(item)
     
-    return user_items_here
+    return user_items
 
 
 # Get details of the current location
