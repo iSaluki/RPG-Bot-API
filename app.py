@@ -180,7 +180,7 @@ def LocationDescription(user_id, _map, location):
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description} items_here={items_here}")   
     if len(items_here) > 0:
         for item in items_here:
-            description += "\n" + item["emoji"] + " " + item["description"]
+            description += "\n\n" + item["emoji"] + " " + item["description"]
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description}")   
 
     return description
