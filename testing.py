@@ -1,4 +1,3 @@
-from flask import Flask, request, jsonify
 import json
 from pymongo import MongoClient
 import urllib
@@ -6,11 +5,9 @@ from time import asctime
 import logging
 import os
 
-logging.basicConfig(filename="api.log", level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 PRODUCTION = True
-
-app = Flask(__name__)
 
 client = MongoClient("mongodb://api:ASrBP1PUB6RUwlpk@rpg-data-shard-00-00.avgt0.mongodb.net:27017,rpg-data-shard-00-01.avgt0.mongodb.net:27017,rpg-data-shard-00-02.avgt0.mongodb.net:27017/rpg-db?ssl=true&replicaSet=atlas-6e05a9-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = client["rpg-db"]
@@ -197,7 +194,7 @@ def MoveItemToInventory(user_id, item_id):
     else:
         logging.debug(f"{asctime()} MOVEITEMTOINVENTORY: user_id={user_id} item_id={item_id} already exists so updating")
         result = user_items.update_one(
-            {"user_id":user_id, "item_id":user_id},
+            {"user_id":user_id, "item_id":item_id},
             {"$set": {"status":"inventory"}},
             upsert=True)
     logging.debug(f"{asctime()} MOVEITEMTOINVENTORY: item_id={item_id} moved to user_id={user_id}'s inventory")
@@ -208,83 +205,10 @@ def DropItemHere(user_id, item_id, map_name, location_id):
     logging.debug(f"{asctime()} DROPITEMHERE: passed in user_id={user_id} item_id={item_id} map_name={map_name} location_id={location_id}")
     user_items = db["user_items"]
     result = user_items.update_one(
-        {"user_id":user_id, "item_id":user_id},
+        {"user_id":user_id, "item_id":item_id},
         {"$set": {"status":"dropped", "map_name":map_name, "location_id":location_id}},
         upsert=True)
-    pass
-
-
-# Health check for DigitalOcean
-@app.route('/api/alive')
-def HealthCheck():
-    return "The API is functional"
-
-
-@app.route('/api/get')
-def get():
-    pass
-
-
-# This is the entry point when a command has been issued from the bot.
-# Extract the command details from the supplied data and call the appropriate function.
-# Send the reply back to the bot to be displayed to the user.
-@app.route('/api/post', methods=["POST"])
-def testpost():
-    logging.debug(f"{asctime()} TESTPOST: started")
-    authHeader = request.headers.get('Authentication')
-    authenticated = Authenticate(authHeader)
-    logging.debug(f"{asctime()} SECURITY: Auth header sent")
-    if authenticated:
-        pass
-        logging.debug(f"{asctime()} SECURITY: Auth header approved")
-    else:
-        return "Authentication Error"
-        logging.critical(f"{asctime()} SECURITY: Auth header rejected")
-
-    user_request = request.get_json(force=True) 
-    logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
-    user_id = int(user_request["user"])
-    command = user_request["command"].lower()
-    argsIncluded = False
-    if "args" in user_request:
-        args = user_request["args"]
-        argsIncluded = True
-    
-    UserCheck(user_id)
-
-    notImplemented = x_emoji+" This feature has not yet been implemented"
-    if command == "buy":
-        reply = notImplemented
-    elif command == "drop":
-        DropItemHere(user_id, args)
-    elif command == "fight":
-        reply = notImplemented
-    elif command == "inventory":
-        reply = GetInventory(user_id)
-    elif command == "location":
-        reply = Location(user_id)
-    elif command == "move":
-        reply = Move(user_id, args)
-    elif command == "open":
-        reply = notImplemented
-    elif command == "pickup":
-        reply = PickUp(user_id, args)
-    elif command == "sell":
-        reply = notImplemented
-    elif command == "trade":
-        reply = notImplemented
-    elif command == "use":
-        reply = notImplemented
-    else:
-        reply = "Unknown command, "+command+" "+args
-
-    if argsIncluded:
-        dict_to_send = {"response":"OK", "command":user_request["command"], "args":user_request["args"], "reply":reply}
-    else:
-        dict_to_send = {"response":"OK", "command":user_request["command"], "reply":reply}
-    logging.debug(f"{asctime()} GETPOST: dict_to_send = {dict_to_send}")
-    return jsonify(dict_to_send)
-
+ 
 
 # Process the drop command.
 # Check that the object supplied is in the user inventory.
@@ -306,7 +230,6 @@ def Drop(user_id, args):
         message = f"You don't have the {item_to_drop}."
         logging.debug(f"{asctime()} DROP: '{item_to_drop}'' is not in the inventory")
     return message
-
 
 
 # Process the inventory command.
@@ -347,10 +270,10 @@ def PickUp(user_id, args):
     logging.debug(f"{asctime()} PICKUP: user={user}")
     items_here = GetItemsForUserAtLocation(user_id, user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} PICKUP: items_here={items_here}")
-    item_to_pickup = args[0].lower()
+    item_to_pickup = args.lower()
     item_id_to_pickup = -1
     for item in items_here:
-        if item["descritiption"] == item_to_pickup:
+        if item["description"].lower() == item_to_pickup:
             if item["gettable"]:
                 item_id_to_pickup = item["item_id"]
             else:
@@ -434,3 +357,10 @@ if PRODUCTION:
     pass
 else:
     app.run(host='0.0.0.0', port=8080)
+
+'''
+User Ids: 
+183240527649570816  Seth
+595321346498625536
+834853116003745792
+'''
