@@ -135,7 +135,7 @@ def GetPlayerItemsAtLocation(user_id, _map, location):
 
 # Get details of the current location
 def GetLocation(_map, location):
-    logging.debug(f"{asctime()} GETLOCATION: passed in _map = {_map}, location = {location}")
+    logging.debug(f"{asctime()} GETLOCATION: passed in _map={_map}, location={location}")
     this_map = db[_map]
     for loc in this_map.find({"location_id":location}):
         logging.debug(f"{asctime()} GETLOCATION: loc = {loc}")
@@ -149,13 +149,20 @@ def GetLocation(_map, location):
 
 
 # Get the description of the current location for the user
-def LocationDescription(_map, location):
-    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in _map = {_map}, location = {location}")
-#    user = GetUser(user_id)
-#    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: user = {user}")
+def LocationDescription(user_id, _map, location):
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: passed in _map={_map}, location={location}")
     loc = GetLocation(_map, location)
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
-    return loc["name"]+": "+loc["description"]
+    description = loc["name"]+": "+loc["description"]
+
+    items_here = GetPlayerItemsAtLocation(user_id, user["map_name"], user["location_id"])
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description} items_here={items_here}")   
+    if len(items_here) > 0:
+        for item in items_here:
+            description += "\n" + item["emoji"] + " " + item["description"]
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description}")   
+
+    return description
 
 
 # Health check for DigitalOcean
@@ -241,17 +248,12 @@ def testpost():
 # Get the user so we can extract their current location.
 # Use the LocationDescription function to get the description for the user location.
 def Location(user_id):
-    logging.debug(f"{asctime()} LOCATION: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} LOCATION: passed in user_id={user_id}")
 
     user = GetUser(user_id)
-    logging.debug(f"{asctime()} LOCATION: user = {user}")
+    logging.debug(f"{asctime()} LOCATION: user={user}")
 
-    description = LocationDescription(user["map_name"], user["location_id"])
-    items_here = GetPlayerItemsAtLocation(user_id, user["map_name"], user["location_id"])
-
-    if len(items_here) > 0:
-        for item in items_here:
-            description += "\n" + item["emoji"] + " " + item["description"]
+    description = LocationDescription(user_id, user["map_name"], user["location_id"])
     return description
 
 # Process the search command.
@@ -319,7 +321,7 @@ def Move(user_id, args):
         new_val = {"location_id": new_loc}
         UpdateUser(user_id, new_val)
 
-        reply = LocationDescription(user["map_name"], new_loc)
+        reply = LocationDescription(user_id, user["map_name"], new_loc)
 
     else:
         reply = x_emoji+"That is not a valid move from here!"
