@@ -343,7 +343,7 @@ def PickUp(user_id, args):
     logging.debug(f"{asctime()} PICKUP: user={user}")
     items_here = GetItemsForUserAtLocation(user_id, user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} PICKUP: items_here={items_here}")
-    item_to_pickup = args[0].lower()
+    item_to_pickup = args.lower()
     item_id_to_pickup = -1
     for item in items_here:
         if item["description"].lower() == item_to_pickup:
