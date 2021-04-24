@@ -150,7 +150,6 @@ def GetItemsForUserAtLocation(user_id, _map, location):
     for item in default_items:
         if item not in user_items and item not in inventory:
             user_items.append(item)
-    
     return user_items
 
 
@@ -166,7 +165,7 @@ def GetLocation(_map, location):
     loc["start_location"] = meta["start_location"]
     if meta["type"] == "grid":
         loc["width"] = meta["width"]
-    return(loc)
+    return loc
 
 
 # Get the description of the current location for the user
@@ -183,7 +182,6 @@ def LocationDescription(user_id, _map, location):
         for item in items_here:
             description += "\n" + item["emoji"] + " " + item["description"]
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description}")   
-
     return description
 
 
@@ -197,7 +195,7 @@ def MoveItemToInventory(user_id, item_id):
     else:
         logging.debug(f"{asctime()} MOVEITEMTOINVENTORY: user_id={user_id} item_id={item_id} already exists so updating")
         result = user_items.update_one(
-            {"user_id":user_id, "item_id":user_id},
+            {"user_id":user_id, "item_id":item_id},
             {"$set": {"status":"inventory"}},
             upsert=True)
     logging.debug(f"{asctime()} MOVEITEMTOINVENTORY: item_id={item_id} moved to user_id={user_id}'s inventory")
@@ -208,10 +206,9 @@ def DropItemHere(user_id, item_id, map_name, location_id):
     logging.debug(f"{asctime()} DROPITEMHERE: passed in user_id={user_id} item_id={item_id} map_name={map_name} location_id={location_id}")
     user_items = db["user_items"]
     result = user_items.update_one(
-        {"user_id":user_id, "item_id":user_id},
+        {"user_id":user_id, "item_id":item_id},
         {"$set": {"status":"dropped", "map_name":map_name, "location_id":location_id}},
         upsert=True)
-    pass
 
 
 # Health check for DigitalOcean
@@ -256,7 +253,7 @@ def testpost():
     if command == "buy":
         reply = notImplemented
     elif command == "drop":
-        DropItemHere(user_id, args)
+        reply = Drop(user_id, args)
     elif command == "fight":
         reply = notImplemented
     elif command == "inventory":
@@ -308,7 +305,6 @@ def Drop(user_id, args):
     return message
 
 
-
 # Process the inventory command.
 # Get a list of items in the user inventory.
 # Create a displayable list.
@@ -350,7 +346,7 @@ def PickUp(user_id, args):
     item_to_pickup = args[0].lower()
     item_id_to_pickup = -1
     for item in items_here:
-        if item["descritiption"] == item_to_pickup:
+        if item["description"].lower() == item_to_pickup:
             if item["gettable"]:
                 item_id_to_pickup = item["item_id"]
             else:

@@ -261,6 +261,7 @@ def Location(user_id):
     description = LocationDescription(user_id, user["map_name"], user["location_id"])
     return description
 
+
 # Process the pickup command.
 # Check that the object supplied is available in this location.
 # If the item is here, add it to the inventory.
