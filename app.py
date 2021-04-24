@@ -176,12 +176,12 @@ def LocationDescription(user_id, _map, location):
     description = loc["name"]+": "+loc["description"]
 
     items_here = GetItemsForUserAtLocation(user_id, _map, location)
-    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description} items_here={items_here}")   
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description} items_here={items_here}")
     if len(items_here) > 0:
         description += "\n\nItems that you can see here..."
         for item in items_here:
             description += "\n" + item["emoji"] + " " + item["description"]
-    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description}")   
+    logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description}")
     return description
 
 
@@ -238,7 +238,7 @@ def testpost():
         return "Authentication Error"
         logging.critical(f"{asctime()} SECURITY: Auth header rejected")
 
-    user_request = request.get_json(force=True) 
+    user_request = request.get_json(force=True)
     logging.debug(f"{asctime()} GETPOST: user_request = {user_request}")
     user_id = int(user_request["user"])
     command = user_request["command"].lower()
@@ -246,7 +246,7 @@ def testpost():
     if "args" in user_request:
         args = user_request["args"]
         argsIncluded = True
-    
+
     UserCheck(user_id)
 
     notImplemented = x_emoji+" This feature has not yet been implemented"
@@ -392,7 +392,7 @@ def Move(user_id, args):
         direction = "w"
     elif direction in ["nw", "north west", "northwest"]:
         direction = "nw"
-    
+
     if direction in loc["links_to"]:
         if loc["type"] == "grid":
             # Determine the new cell
@@ -413,7 +413,7 @@ def Move(user_id, args):
                 new_loc -= 1
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
-        
+
         logging.debug(f"{asctime()} MOVE: old location:{user['location_id']} direction:{direction} new location:{new_loc}")
 
         # Update the user to show their new location
