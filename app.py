@@ -231,7 +231,7 @@ def testpost():
         reply = notImplemented
     elif command == "fight":
         reply = notImplemented
-    elif command == "search":
+    elif command == "pickup":
         reply = notImplemented
     elif command == "inventory":
         inventory = GetInventoryDescriptions(user_id)
