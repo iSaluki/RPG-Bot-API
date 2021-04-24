@@ -257,7 +257,7 @@ def testpost():
     elif command == "fight":
         reply = notImplemented
     elif command == "inventory":
-        reply = GetInventory(user_id)
+        reply = Inventory(user_id)
     elif command == "location":
         reply = Location(user_id)
     elif command == "move":
