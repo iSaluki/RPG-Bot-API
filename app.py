@@ -36,16 +36,16 @@ def Authenticate(authHeader):
 
 # Check to see if this user already exists. If they don't, add them.
 def UserCheck(user_id):
-    logging.debug(f"{asctime()} USERCHECK: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} USERCHECK: passed in user_id={user_id}")
     users = db["users"]
     if users.count_documents({"user_id":user_id}) == 0:
-        logging.debug(f"{asctime()} USERCHECK: user_id = {user_id} does not exist")
+        logging.debug(f"{asctime()} USERCHECK: user_id={user_id} does not exist")
         users.insert_one({"user_id":user_id, "map_name":"map_tutorial", "location_id":51})
 
 
 # Returns the details of the current user
 def GetUser(user_id):
-    logging.debug(f"{asctime()} GETUSER: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} GETUSER: passed in user_id={user_id}")
     users = db["users"]
     for user in users.find({"user_id":user_id}):
         logging.debug(f"{asctime()} GETUSER: {user}")
@@ -54,7 +54,7 @@ def GetUser(user_id):
 
 # Modifies the current user's details. new_vals is a dictionary with the changes/additions
 def UpdateUser(user_id, new_vals):
-    logging.debug(f"{asctime()} UPDATEUSER: passed in user_id = {user_id}, new_vals = {new_vals}")
+    logging.debug(f"{asctime()} UPDATEUSER: passed in user_id={user_id}, new_vals={new_vals}")
     users = db["users"]
     result = users.update_one(
         {"user_id" : user_id},
@@ -66,7 +66,7 @@ def UpdateUser(user_id, new_vals):
 # Gets the user's inventory and returns list of dicts of each item and it's details
 # Compare to GetInventoryDescriptions
 def GetInventory(user_id):
-    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id={user_id}")
     user_items = db["user_items"]
     items = db["items"]
     inv = []
@@ -81,14 +81,14 @@ def GetInventory(user_id):
 # Gets a list of inventory items and returns a list of their descriptions only
 # Compare to GetInventory
 def GetInventoryDescriptions(user_id):
-    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id = {user_id}")
+    logging.debug(f"{asctime()} GETINVENTORY: passed in user_id={user_id}")
     user_items = db["user_items"]
     items = db["items"]
     inv = []
     for user_item in user_items.find({"user_id":user_id, "status":"inventory"}):
         for item in items.find({"item_id":user_item["item_id"]}):
             inv.append(item["emoji"]+" "+item["description"])
-            logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: item = {item}")
+            logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: item={item}")
     logging.debug(f"{asctime()} GETINVENTORYDESCRIPTIONS: returning {inv}")
     return inv
 
@@ -96,14 +96,14 @@ def GetInventoryDescriptions(user_id):
 # Get the items that the player has dropped at the given location
 # Returns a list of dictionaries, one for each item. Full details returned
 def GetPlayerItemsAtLocation(user_id, _map, location):
-    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id = {user_id}, _map = {_map}, location = {location}")
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id={user_id}, _map={_map}, location={location}")
     user_items = db["user_items"]
     items = db["items"]
     user_items_here = []
     for user_item in user_items.find({"user_id":user_id, "status":"dropped", "map_name":_map, "location_id":location}):
         for item in items.find({"item_id":user_item["item_id"]}):
             user_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
-            logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: item = {item}")
+            logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: item={item}")
     logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: returning {user_items_here}")
     return user_items_here
 
@@ -111,11 +111,11 @@ def GetPlayerItemsAtLocation(user_id, _map, location):
 # Get the default items for a given map location
 # Returns a list of dictionaries, one for each item. Full details returned
 def GetDefaultItemsAtLocation(_map, location):
-    logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: passed in _map = {_map}, location = {location}")
+    logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: passed in _map={_map}, location={location}")
     items = db["items"]
     default_items_here = []
     for item in items.find({"map_name":_map, "location_id":location}):
-        logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: item = {item}")
+        logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: item={item}")
         default_items_here.append({"item_id":item["item_id"], "description":item["description"], "emoji":item["emoji"], "gettable":item["gettable"], "universal":item["universal"]})
     logging.debug(f"{asctime()} GETDEFAULTITEMSATLOCATION: returning {default_items_here}")
     return default_items_here
@@ -123,7 +123,7 @@ def GetDefaultItemsAtLocation(_map, location):
 
 # Get a list of objects that the user should see at this location. Take account of their inventory and what they have previously dropped.
 def GetPlayerItemsAtLocation(user_id, _map, location):
-    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id = {user_id}, _map = {_map}, location = {location}")
+    logging.debug(f"{asctime()} GETPLAYERITEMSATLOCATION: passed in user_id={user_id}, _map={_map}, location={location}")
     user_items = db["user_items"]
     items = db["items"]
     user_items_here = []
@@ -155,7 +155,7 @@ def LocationDescription(user_id, _map, location):
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: loc = {loc}")
     description = loc["name"]+": "+loc["description"]
 
-    items_here = GetPlayerItemsAtLocation(user_id, user["map_name"], user["location_id"])
+    items_here = GetPlayerItemsAtLocation(user_id, _map, location)
     logging.debug(f"{asctime()} LOCATIONDESCRIPTION: description={description} items_here={items_here}")   
     if len(items_here) > 0:
         for item in items_here:
@@ -268,13 +268,13 @@ def Location(user_id):
 # Move to that location and build the new location's description as the reply.
 # If an invalid move has been made, build an appropriate reply.
 def Move(user_id, args):
-    logging.debug(f"{asctime()} MOVE: passed in user_id = {user_id}, args = {args}")
+    logging.debug(f"{asctime()} MOVE: passed in user_id={user_id}, args={args}")
 
     user = GetUser(user_id)
-    logging.debug(f"{asctime()} MOVE: user = {user}")
+    logging.debug(f"{asctime()} MOVE: user={user}")
 
     loc = GetLocation(user["map_name"], user["location_id"])
-    logging.debug(f"{asctime()} MOVE: loc = {loc}")
+    logging.debug(f"{asctime()} MOVE: loc={loc}")
 
     direction = args[0].lower()
     if direction in ["n", "north"]:
@@ -315,7 +315,7 @@ def Move(user_id, args):
             elif direction == "nw":
                 new_loc -= loc["width"] - 1
         
-        logging.debug(f"{asctime()} MOVE: old location: {user['location_id']} direction: {direction} new location {new_loc}")
+        logging.debug(f"{asctime()} MOVE: old location:{user['location_id']} direction:{direction} new location:{new_loc}")
 
         # Update the user to show their new location
         new_val = {"location_id": new_loc}
