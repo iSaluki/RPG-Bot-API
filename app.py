@@ -419,9 +419,10 @@ def Move(user_id, args):
         # Update the user but check to see if the new location is a special tile
         new_val = {"location_id": new_loc}
         loc = GetLocation(user["map_name"], new_loc)
-        if "type" in loc:
+        logging.debug(f"{asctime()} MOVE: loc:{loc}")
+        if "special" in loc:
             special_args = loc["special_args"]
-            if loc["type"] == "teleport":
+            if loc["special"] == "teleport":
                 new_val = {"map_name":special_args["map_name"], "location_id":special_args["location_id"]}                
         UpdateUser(user_id, new_val)
 
