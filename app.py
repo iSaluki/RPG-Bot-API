@@ -421,9 +421,11 @@ def Move(user_id, args):
         loc = GetLocation(user["map_name"], new_loc)
         logging.debug(f"{asctime()} MOVE: loc:{loc}")
         if "special" in loc:
+            logging.debug(f"{asctime()} MOVE: special_args:{loc['special_args']}")
             special_args = loc["special_args"]
             if loc["special"] == "teleport":
-                new_val = {"map_name":special_args["map_name"], "location_id":special_args["location_id"]}                
+                new_val = {"map_name":special_args["map_name"], "location_id":special_args["location_id"]}
+        logging.debug(f"{asctime()} MOVE: new_val:{new_val}")
         UpdateUser(user_id, new_val)
 
         # Refresh the user details and get the new location description
