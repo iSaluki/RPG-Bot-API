@@ -405,11 +405,11 @@ def Move(user_id, args):
             elif direction == "e":
                 new_loc += 1
             elif direction == "se":
-                new_loc += (loc["width"] - 1)
+                new_loc += (loc["width"] + 1)
             elif direction == "s":
                 new_loc += loc["width"]
             elif direction == "sw":
-                new_loc += (loc["width"] + 1)
+                new_loc += (loc["width"] - 1)
             elif direction == "w":
                 new_loc -= 1
             elif direction == "nw":
