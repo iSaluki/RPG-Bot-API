@@ -303,7 +303,7 @@ def Move(user_id, args):
     loc = GetLocation(user["map_name"], user["location_id"])
     logging.debug(f"{asctime()} MOVE: loc={loc}")
 
-    direction = args[0].lower()
+    direction = args.lower()
     if direction in ["n", "north"]:
         direction = "n"
     elif direction in ["ne", "north east", "northeast"]:
@@ -363,5 +363,5 @@ else:
 User Ids: 
 183240527649570816  Seth
 595321346498625536
-834853116003745792
+834853116003745792  Martin
 '''
