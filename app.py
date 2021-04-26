@@ -393,6 +393,7 @@ def Move(user_id, args):
     elif direction in ["nw", "north west", "northwest"]:
         direction = "nw"
 
+    logging.debug(f"{asctime()} MOVE: direction={direction}, links_to={loc['links_to']}")
     if direction in loc["links_to"]:
         if loc["type"] == "grid":
             # Determine the new cell
@@ -400,20 +401,19 @@ def Move(user_id, args):
             if direction == "n":
                 new_loc -= loc["width"]
             elif direction == "ne":
-                new_loc -= loc["width"] + 1
+                new_loc -= (loc["width"] - 1)
             elif direction == "e":
                 new_loc += 1
             elif direction == "se":
-                new_loc += loc["width"] + 1
+                new_loc += (loc["width"] - 1)
             elif direction == "s":
                 new_loc += loc["width"]
             elif direction == "sw":
-                new_loc += loc["width"] - 1
+                new_loc += (loc["width"] + 1)
             elif direction == "w":
                 new_loc -= 1
             elif direction == "nw":
-                new_loc -= loc["width"] - 1
-
+                new_loc -= (loc["width"] + 1)
         logging.debug(f"{asctime()} MOVE: old location:{user['location_id']} direction:{direction} new location:{new_loc}")
 
         # Update the user to show their new location
