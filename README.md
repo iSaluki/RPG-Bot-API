@@ -1,3 +1,6 @@
+# NOTE: None of the private keys or endpoints in this repository are still active.
+
+---
 # RPG-Bot-API
 
 The API server for the RPG game
